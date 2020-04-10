@@ -22,9 +22,10 @@ import {
   statusCodes,
 } from '@react-native-community/google-signin';
 import auth from '@react-native-firebase/auth';
+import googleWebClientId from "./googlekey";
 
 GoogleSignin.configure({
-  webClientId: "883827141283-nso0btis45mnfn95b676dl1o97nmqlfn.apps.googleusercontent.com"
+  webClientId: googleWebClientId
 });
 let signInWithGoogle = async () => {
   try {
