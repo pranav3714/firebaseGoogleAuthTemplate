@@ -21,12 +21,18 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-community/google-signin';
+
 import auth from '@react-native-firebase/auth';
 import googleWebClientId from "./googlekey";
+import rootReducer from "./redux/reducer";
+import { Provider, useSelector, useDispatch } from "react-redux";
+import { createStore } from "redux";
 
 GoogleSignin.configure({
   webClientId: googleWebClientId
 });
+const store = createStore(rootReducer)
+
 let signInWithGoogle = async () => {
   try {
     await GoogleSignin.hasPlayServices();
@@ -48,20 +54,36 @@ let signInWithGoogle = async () => {
   }
 };
 
+const NewComponent: () => React$Node = () => {
+  const dispatch = useDispatch()
+  //console.log(useSelector(states => console.log(states)));
+  const counterVal = useSelector(states => states.counter)
+  const login = useSelector(states => states.isLogin)
+  return (
+      <View>
+        <Text>{counterVal}</Text>
+        <Button title="Increment" onPress={() => dispatch({type: "INCREMENT"})} />
+        <Button title="Decrement" onPress={() => dispatch({type: "DECREMENT"})} />
+        {login ? <Button title="SIGN OUT" color="red" onPress={() => dispatch({type: "SIGN_OUT"})} /> : <Button title="SIGN IN" onPress={() => dispatch({ type: "SIGN_IN", payload: {jwt: "random token id"}}) } />}
+      </View>
+  )
+};
+
 const App: () => React$Node = () => {
   return (
-    <>
-      <View>
-        <Text>Hello there</Text>
-        <GoogleSigninButton
-        onPress={signInWithGoogle}
-        style={{ width: 192, height: 48 }}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Dark}
-        />
-      </View>
-    </>
-  );
+        <Provider store={store}>
+          <View>
+            <Text>Hello there</Text>
+            <GoogleSigninButton
+            onPress={signInWithGoogle}
+            style={{ width: 192, height: 48 }}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
+            />
+            <NewComponent />
+          </View>
+        </Provider>
+  )
 };
 
 const styles = StyleSheet.create({
